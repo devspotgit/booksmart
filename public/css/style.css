@@ -1,0 +1,52 @@
+
+
+/* ---------------------------- global styling --------------------------- */
+:root{
+    --primary:green;
+    --black:hsl(0, 0%, 0%);
+    --grey:hsl(0, 0%, 20%);
+    --grey-light:hsl(0, 0%, 40%);
+    --grey-lighter:hsl(0, 0%, 60%);
+    --grey-lighter-plus:hsl(0, 0%, 80%);
+    --white:hsl(0, 0%, 100%);
+}
+
+*{
+    padding:0;
+    margin:0;
+}
+
+button{
+    border-width:0;
+    background-color:transparent;
+    cursor:pointer;
+    font-size:inherit;
+    font-family:inherit;
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+input{
+    border-width:0;
+    font-size:inherit;
+    font-family:inherit;
+}
+
+#container{
+   min-height:100vh;
+   display:flex;
+   justify-content:center;
+   align-items:center;     
+}
+
+
+/* ---------------------------- sign form --------------------------- */
+.sign-form{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
