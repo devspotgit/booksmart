@@ -4,9 +4,7 @@
 
     import { ref } from "vue"
 
-    import { supabase } from "../supabaseConfig"
-
-    import { router } from "../router.js"
+    import { supabase } from "../supabaseConfig.js"
     
     const errorMessage = ref("")
 
@@ -16,21 +14,25 @@
 
         const formData = new FormData(e.target)
 
-        const { error } = await supabase.auth.signUp({
+        try{
 
-            email: formData.get("email"),
-            
-            password: formData.get("password"),
-        })
-
-        if(error){
-
-           errorMessage.value = error.message
+            const { error } = await supabase.auth.signUp({
+    
+                email: formData.get("email"),
+                
+                password: formData.get("password"),
+            })
+    
+            if(error){
+    
+               errorMessage.value = error.message
+            }
         }
-        else{
+        catch(er){
 
-            router["/"]()
+            console.log(er)
         }
+
     }
 
 </script>
@@ -40,20 +42,17 @@
 <template>
 
     <form @submit="submit" class="sign-form">
-        <span>{{ errorMessage }}</span>
-        <span>SIGN UP</span>
-        <input type="text" placeholder="Email" name="email">
-        <input type="password" placeholder="Password" name="password">
-        <button>SIGN UP</button>
-        <span>Already have an account, <a href="/signin">Sign in</a></span>
+        <span class="sign-form-error">{{ errorMessage }}</span>
+        <span class="sign-form-title">SIGN UP</span>
+        <input class="sign-form-field" type="text" placeholder="Email" name="email">
+        <input class="sign-form-field" type="password" placeholder="Password" name="password">
+        <button class="sign-form-submit">SIGN UP</button>
+        <span class="sign-form-action">Already have an account, <a href="/signin">Sign in</a></span>
     </form>
 
 </template>
 
 
 
-<style scoped>
-
-    
-</style>
+<style scoped></style>
 

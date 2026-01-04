@@ -1,13 +1,11 @@
 
 import { router } from "./router.js"
 
+import { supabase } from "./supabaseConfig.js"
+
 const container = document.querySelector("#container")
 
-let currentPath = location.pathname
-
-router[currentPath]()
-
-history.replaceState({path: currentPath}, "", currentPath)
+let currentPath = null
 
 container.addEventListener("click", e => {
 
@@ -20,13 +18,59 @@ container.addEventListener("click", e => {
             currentPath = e.target.pathname    
     
             router[currentPath]()
+
+            history.pushState({path: currentPath}, "", currentPath)
         }
     }
 })
 
 window.addEventListener("popstate", e => {
 
-    router[e.state.path]("event")
+    currentPath = e.state.path
+
+    router[currentPath]()
+})
+
+supabase.auth.onAuthStateChange((_, session) => {
+
+    if(session){
+
+        if(currentPath == null){
+
+            currentPath = "/"
+
+            router[currentPath]()
+
+            history.replaceState({path: currentPath}, "", currentPath)
+        }
+        else{
+
+            currentPath = "/"
+
+            router[currentPath]()
+
+            history.pushState({path: currentPath}, "", currentPath)
+        }
+    }
+    else{
+
+        if(currentPath == null){
+
+            currentPath = location.pathname == "/" ? "/signin" : location.pathname
+
+            router[currentPath]()
+
+            history.replaceState({path: currentPath}, "", currentPath)
+        }
+        else{
+
+            currentPath = "/signin"
+
+            router[currentPath]()
+
+            history.pushState({path: currentPath}, "", currentPath)
+        }
+    }
 })
 
 

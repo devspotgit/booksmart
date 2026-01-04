@@ -7,15 +7,15 @@ import Signin from "./signin/Signin.vue"
 
 import Signup from "./signup/signup.vue"
 
-import { supabase } from "./supabaseConfig"
-
 const router = {
 
     container: document.querySelector("#container"),
 
     app: null,
 
-    "/signin": async function(e){
+    "/signin": function(){
+
+        document.title = "BookSmart - Signin"
 
         if(this.app) this.app.unmount()
 
@@ -24,11 +24,11 @@ const router = {
         this.app = createApp(Signin)
 
         this.app.mount("#container")
-
-        if(!e) history.pushState({path: "/signin"}, "", "/signin")
     },
 
-    "/signup": function(e){
+    "/signup": function(){
+
+        document.title = "BookSmart - Signup"
 
         if(this.app) this.app.unmount()
 
@@ -37,30 +37,19 @@ const router = {
         this.app = createApp(Signup)
 
         this.app.mount("#container")
-
-        if(!e) history.pushState({path: "/signup"}, "", "/signup")
     },
 
-    "/": async function(e){
+    "/": function(){
 
-        const { data } = await supabase.auth.getSession()
+        document.title = "BookSmart - Home"
 
-        if(data.session){
+        if(this.app) this.app.unmount()
 
-            if(this.app) this.app.unmount()
-    
-            this.container.innerHTML = ""
+        this.container.innerHTML = ""
 
-            this.app = createApp(Home)
+        this.app = createApp(Home)
 
-            this.app.mount("#container")
-
-            if(!e) history.pushState({path: "/"}, "", "/")
-        }
-        else{
-
-            this["/signin"]()
-        }
+        this.app.mount("#container")
     }
 }
 
