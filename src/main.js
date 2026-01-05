@@ -7,6 +7,8 @@ const container = document.querySelector("#container")
 
 let currentPath = null
 
+let firstTime = true
+
 container.addEventListener("click", e => {
 
     if(e.target.tagName == "A" && e.target.hostname == location.hostname){
@@ -35,21 +37,28 @@ supabase.auth.onAuthStateChange((_, session) => {
 
     if(session){
 
-        if(currentPath == null){
-
-            currentPath = "/"
-
-            router[currentPath]()
-
-            history.replaceState({path: currentPath}, "", currentPath)
+        if(!firstTime){
+    
+            if(currentPath == null){
+    
+                currentPath = "/"
+    
+                router[currentPath](session.user)
+    
+                history.replaceState({path: currentPath}, "", currentPath)
+            }
+            else{
+    
+                currentPath = "/"
+    
+                router[currentPath](session.user)
+    
+                history.pushState({path: currentPath}, "", currentPath)
+            }
         }
         else{
 
-            currentPath = "/"
-
-            router[currentPath]()
-
-            history.pushState({path: currentPath}, "", currentPath)
+            firstTime = false
         }
     }
     else{

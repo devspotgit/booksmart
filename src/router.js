@@ -39,7 +39,7 @@ const router = {
         this.app.mount("#container")
     },
 
-    "/": function(){
+    "/": function(user){
 
         document.title = "BookSmart - Home"
 
@@ -47,7 +47,7 @@ const router = {
 
         this.container.innerHTML = ""
 
-        this.app = createApp(Home)
+        this.app = createApp(Home, { user })
 
         this.app.mount("#container")
     }

@@ -4,7 +4,7 @@
 
     import { ref } from "vue"
 
-    import { supabase } from "../supabaseConfig.js"
+    import { lib } from "../lib.js"
 
     const errorMessage = ref("")
 
@@ -14,23 +14,17 @@
 
         const formData = new FormData(e.target)
 
+        const email = formData.get("email")
+
+        const password = formData.get("password")
+
         try{
 
-            const { error } = await supabase.auth.signInWithPassword({ 
-                
-                email: formData.get("email"),
-    
-                password: formData.get("password")
-            })
-
-            if(error){
-
-                errorMessage.value = error.message
-            }
+            await lib.signin( email, password)
         }
-        catch(er){
+        catch(error){
 
-            console.log(er)
+            errorMessage.value = error.message
         }
     }
 
