@@ -6,6 +6,8 @@
 
     import { ref, onMounted } from "vue"
 
+    import { supabase } from "../supabaseConfig.js"
+
     const props = defineProps({
 
         user: Object
@@ -13,16 +15,23 @@
 
     onMounted(async () => {
 
-        // try{
-    
-        //     const tag = await lib.addTag("movies")
-    
-        //     console.log(tag)
-        // }
-        // catch(error){
-    
-        //     console.log(error)
-        // }
+    //    try{
+
+    //     await lib.init(props.user.id)
+
+    //     const res = await lib.removeCollection("css")
+
+    //     console.log(lib.getAllBookmarks())
+    //     console.log(lib.getAllCollections())
+    //     console.log(lib.getAllTags())
+    //     console.log(res)
+    //    }
+    //    catch(error){
+
+    //     console.log(error)
+    //    }
+
+       
     })
 
 </script>
