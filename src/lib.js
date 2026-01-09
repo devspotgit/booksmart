@@ -3,87 +3,82 @@ import { supabase } from "./supabaseConfig.js"
 
 const lib = {
 
-    bookmarks: null,
+    bookmarks: [],
 
-    collections: null,
+    collections: [],
 
-    tags: null,
+    tags: [],
 
     userId: null,
+
 
 
     init(userId){
 
         this.userId = userId
 
-        // get all the bookmarks from the db
         return supabase.from("Bookmarks").select().eq("user_id", this.userId).then(({ error, data }) => {
 
-            if(data){
+            if(!error){
 
                 const bookmarks = data
 
-                this.bookmarks = bookmarks.map(({url, title, domain, favorite, image, tags, collection, created_at}) => {
+                this.bookmarks = bookmarks.map(({url, title, domain, favorite, image, tags, collection, created_at}) => ({
 
                     url, title, domain, favorite, image, tags, collection, created_at
+                }))
+            }
+            
+            return { error }
+        })
+        .then( ({ error }) => {
+
+            if(!error){
+
+                return supabase.from("Collections").select().eq("user_id", this.userId).then(({ error, data }) => {
+    
+                    if(!error){
+    
+                        const collections = data
+    
+                        this.collections = collections.map(({name}) => name)
+                    }
+
+                    return { error }
                 })
-
-                return null
             }
-            else{
 
-                return Promise.reject(error)
+            return { error }
+        })
+        .then( ({ error }) => {
+
+            if(!error){
+
+                return supabase.from("Tags").select().eq("user_id", this.userId).then(({ error, data }) => {
+    
+                    if(!error){
+    
+                        const tags = data
+    
+                        this.tags = tags.map(({name}) => name)
+                    }
+
+                    return { error }
+                })
             }
-        })
-        .then( () => {
 
-            // get all the collections from the db
-            return supabase.from("Collections").select().eq("user_id", this.userId).then(({ error, data }) => {
-
-                if(data){
-
-                    const collections = data
-
-                    this.collections = collections.map(({name}) => name)
-
-                    return null
-                }
-                else{
-
-                    return Promise.reject(error)
-                }
-            })
-        })
-        .then( () => {
-
-            // get all tags from the db
-            return supabase.from("Tags").select().eq("user_id", this.userId).then(({ error, data }) => {
-
-                if(data){
-
-                    const tags = data
-
-                    this.tags = tags.map(({name}) => name)
-
-                    return null
-                }
-                else{
-
-                    return Promise.reject(error)
-                }
-            })
+            return { error }
         })
     },
+
+    
 
     signout(){
 
-        return supabase.auth.signOut().then(({error}) => {
-
-            if(error) return Promise.reject(error)
-
-            else return null
-        })
+        return supabase.auth.signOut().then(({error}) => ({ error }))
     },
+
+
 
     signin(email, password){
 
@@ -93,13 +88,10 @@ const lib = {
             
             password: password
         })
-        .then(({error, data}) => {
-
-            if(error)  return Promise.reject(error)
-            
-            else return data
-        })
+        .then(({ error }) => ({ error }))
     },
+
+
 
     signup(email, password){
 
@@ -109,190 +101,222 @@ const lib = {
 
             password: password
         })
-        .then(({error, data}) => {
-
-            if(error) return Promise.reject(error)
-
-            else return data
-        })
+        .then(({ error }) => ({ error }))
     },
 
-    // addBookmark(url){
-
-    //     const bookmark = this.bookmarks.find(bookmark => bookmark.url == url)
-
-    //     if(!bookmark){
 
 
-            
-    //     }
-    //     else{
+    addBookmark(url){
 
-    //         return "bookmark already added"
-    //     }
-    // },
+        const bookmark = this.bookmarks.find(bookmark => bookmark.url == url)
+
+        if(!bookmark){
+
+            return fetch(`https://webmetadata.vercel.app/getmeta?url=${url}`)
+
+            .then((res) => res.json())
+
+            .then(({error, data}) => {
+
+                if(!error){
+
+                    const bookmark = { 
+
+                        title: data.title,
+
+                        url: url,
+
+                        domain: data.domain, 
+                        
+                        image: data.favicon
+                    }
+
+                    return supabase.from("Bookmarks").insert(bookmark).select().then(( {error, data } ) => {
+
+                        const { url, title, domain, favorite, image, tags, collection, created_at } = data[0]
+
+                        if(!error) this.bookmarks.push({ url, title, domain, favorite, image, tags, collection, created_at})
+
+                        return { error }
+                    })
+                }
+
+                return { error: { message: error, reason: "user" } }
+            })
+        }
+       
+        return { error : { message: "bookmark already added", reason: "user" } }
+    },
+
+
 
     addCollection(name){
 
-        // get the collection with the specified name if exists
         const collection = this.collections.find(collection => collection == name)
 
         if(!collection){
 
-            // add collection to the db
-            return supabase.from("Collections").insert({ name: name }).then(({error}) => {
+            return supabase.from("Collections").insert({ name: name }).then(({ error }) => {
     
-                if(error) return Promise.reject(error)
-        
-                else {
+                if(!error) this.collections.push(name)
 
-                    // add collection to the list
-                    this.collections.push(name)
-
-                    return null
-                }
+                return { error }
             })
         }
-        else{
 
-            return "collection already added"
-        }
+        return { error : { message: "collection already added", reason: "user" } }
     },
+
+
 
     addTag(name){
 
-        // get the tag with the specified name if exists
+        
         const tag = this.tags.find(tag => tag == name)
 
         if(!tag){
 
-            // add tag to the db
-            return supabase.from("Tags").insert({ name: name }).then(({error}) => {
+            return supabase.from("Tags").insert({ name: name }).then(({ error }) => {
     
-                if(error) return Promise.reject(error)
-        
-                else {
-
-                    // add tag to the list
-                    this.tags.push(name)
-
-                    return null
-                }
+                if(!error) this.tags.push(name)
+       
+                return { error }
             })
         }
-        else{
 
-            return "tag already added"
-        }
+        return { error : { message: "tag already added", reason: "user" } }
     },
+
+
 
     removeBookmark(url){
 
-        // remove bookmark from the db
-        return supabase.from("Bookmarks").delete().eq("url", url).eq("user_id", this.userId).then(() => {
+        return supabase.from("Bookmarks").delete().eq("url", url).eq("user_id", this.userId).then(({ error }) => {
 
-            // remove bookmark from the list
-            this.bookmarks = this.bookmarks.filter(bookmark => bookmark.url != url)
+            if(!error) this.bookmarks = this.bookmarks.filter(bookmark => bookmark.url != url)
 
-            return null
+            return { error }
         })
     },
+
+
 
     removeCollection(name){
 
-        // removing the collection from the db
-        return supabase.from("Collections").delete().eq("name", name).eq("user_id", this.userId).then(() => {
+        return supabase.from("Collections").delete().eq("name", name).eq("user_id", this.userId).then(({ error }) => {
 
-            // update bookmarks that has that collection from the db
-            return supabase.from("Bookmarks").update({ collection: null }).eq("user_id", this.userId).eq("collection", name).then(({error}) => {
+            if(!error){
 
-                if(!error){
-                
-                    // removing collection from the list
-                    this.collections = this.collections.filter(collection => collection != name)
+                return supabase.from("Bookmarks").update({ collection: null }).eq("user_id", this.userId).eq("collection", name).then(({error}) => {
+    
+                    if(!error){
+                    
+                        this.collections = this.collections.filter(collection => collection != name)
+    
+                        this.bookmarks.forEach(bookmark => {
+    
+                            if(bookmark.collection == name) bookmark.collection = null
+                        })
+                    }
 
-                    // removing collection for any bookmark that has it
-                    this.bookmarks.forEach(bookmark => {
+                    return { error }
+                })
+            }
 
-                        if(bookmark.collection == name) bookmark.collection = null
-                    })
-
-                    return null
-                }
-            })
+            return { error }
         })
     },
 
+
+
     removeTag(name){
 
-        // removing the tag from the db
-        return supabase.from("Tags").delete().eq("name", name).eq("user_id", this.userId).then(() => {
+        return supabase.from("Tags").delete().eq("name", name).eq("user_id", this.userId).then(({ error }) => {
 
-            // array of promises
+            
             const pr = this.bookmarks.map(bookmark => new Promise((resolve, _) => {
 
-                // loop through all bookmarks and return a promise
+                if(!bookmark.tags) resolve({ error: null })
 
-                // get the specified tag if exists
                 const tag = bookmark.tags.split("-").find(tag => tag == name)
 
                 if(tag){
 
-                    // compute the new tags
-                    const tags = bookmark.tags.split("-").filter(tag => tag != name).join("-")
+                    let tags = bookmark.tags.split("-").filter(tag => tag != name).join("-")
+
+                    if(!tags) tags = null
                 
-                    // update tags from the db
                     resolve(supabase.from("Bookmarks").update({ tags: tags }).eq("user_id", this.userId).eq("url", bookmark.url).then(({error}) => {
                     
-                        if(!error){
-
-                            // update tags from the list
-                            bookmark.tags = tags
+                        if(!error) bookmark.tags = tags
                         
-                            return null
-                        }
+                        return { error }
                     }))
                 }
-                else{
                 
-                    resolve(null)
-                }
+                resolve({ error: null })
             }))
+
 
             return Promise.all(pr).then(() => {
             
-                // update the list
                 this.tags = this.tags.filter(tag => tag != name)
 
-                return null
+                return { error: null }
             })
         })
     },
 
+
+
     getBookmarksFromCollection(name){
 
-        return this.bookmarks.filter(bookmark => bookmark.collection == name)
+        const bookmarks = this.bookmarks.filter(bookmark => bookmark.collection == name)
+
+        return { error: null, data: bookmarks }
     },
+
+
 
     getBookmarksFromTag(name){
 
-        return this.bookmarks.filter(bookmark => bookmark.tags.split("-").find(tag => tag == name))
+        const bookmarks = []
+
+        this.bookmarks.forEach(bookmark => {
+
+            if(bookmark.tags){
+
+                if(bookmark.tags.split("-").find(tag => tag == name))
+
+                bookmarks.push(bookmark)
+            }
+        })
+
+        return { error: null, data: bookmarks }        
     },
+
+
 
     getAllBookmarks(){
 
-        return [ ...this.bookmarks ]
+        return { error: null, data: this.bookmarks } 
     },
+
+
 
     getAllTags(){
 
-        return [ ...this.tags ]
+        return { error: null, data: this.tags } 
     },
+
+
 
     getAllCollections(){
 
-        return [ ...this.collections ]
+        return { error: null, data: this.collections }
     },
+
+
 
     addBookmarkToCollection(name, url){
 
@@ -300,75 +324,94 @@ const lib = {
 
         if(bookmark.collection != name){
         
-            // update bookmark from the db
             return supabase.from("Bookmarks").update({collection: name}).eq("user_id", this.userId).eq("url", url).then(({error}) => {
 
-                if(!error){
+                if(!error) bookmark.collection = name
 
-                   bookmark.collection = name
-
-                    return null
-                }
+                return { error }
             })
         }
-        else{
-        
-            return "bookmark already added to collection " + name
-        }
+      
+        return { error : { message: "collection already added", reason: "user" } }
     },
+
+
 
     addBookmarkToTag(name, url){
 
         const bookmark = this.bookmarks.find(bookmark => bookmark.url == url)
 
+        if(!bookmark.tags){
+
+            return supabase.from("Bookmarks").update({ tags: name }).eq("user_id", this.userId).eq("url", url).then(({error}) => {
+            
+                if(!error) bookmark.tags = name
+
+                return { error }
+            })
+        } 
+            
         const tag = bookmark.tags.split("-").find(tag => tag == name)
 
         if(!tag){
 
-            const tags = [ ...bookmark.tags.split("-"), tag ].join("-")
+            const tags = [ ...bookmark.tags.split("-"), name ].join("-")
         
-            // update bookmark from the db
             return supabase.from("Bookmarks").update({ tags: tags }).eq("user_id", this.userId).eq("url", url).then(({error}) => {
             
-                if(!error){
-                
-                    bookmark.tags = tags
+                if(!error) bookmark.tags = tags
 
-                    return null
-                }
+                return { error }
             })
         }
-        else{
-
-            return "bookmark already added to tag " + name
-        }
-
+       
+        return { error : { message: "tag already added", reason: "user" } }
     },
+
+
 
     setBookmarkAsFavorite(url){
 
         return supabase.from("Bookmarks").update({favorite: true}).eq("user_id", this.userId).eq("url", url).then(({error}) => {
 
-            const bookmark = this.bookmarks.find(bookmark => bookmark.url == url)
+            if(!error){
 
-            bookmark.favorite = true
+                const bookmark = this.bookmarks.find(bookmark => bookmark.url == url)
+    
+                bookmark.favorite = true
+            }
+
+            return { error }
         })
     },
+
+
 
     unsetBookmarkAsFavorite(url){
 
         return supabase.from("Bookmarks").update({favorite: false}).eq("user_id", this.userId).eq("url", url).then(({error}) => {
 
-            const bookmark = this.bookmarks.find(bookmark => bookmark.url == url)
+            if(!error){
 
-            bookmark.favorite = false
+                const bookmark = this.bookmarks.find(bookmark => bookmark.url == url)
+    
+                bookmark.favorite = false
+            }
+
+            return { error }
         })
     },
 
+
+
     getFavoriteBookmarks(){
 
-        return this.bookmarks.filter(bookmark => bookmark.favorite == true)
+        const bookmarks = this.bookmarks.filter(bookmark => bookmark.favorite == true)
+
+        return { error: null, data: bookmarks }
     },
+
+
 
     removeBookmarkFromTag(name, url){
 
@@ -376,34 +419,31 @@ const lib = {
 
         const tags = bookmark.tags.split("-").filter(tag => tag != name).join("-")
 
-        // update bookmark from the db
         return supabase.from("Bookmarks").update({tags: tags}).eq("user_id", this.userId).eq("url", url).then(({error}) => {
 
-            if(!error){
+            if(!error) bookmark.tags = tags
 
-                // update bookmark from the list
-                bookmark.tags = tags
-            }
+            return { error }
         })
-
     },
+
+
 
     removeBookmarkFromCollection(url){
 
         const bookmark = this.bookmarks.find(bookmark => bookmark.url == url)
 
-        // update bookmark from the db
         return supabase.from("Bookmarks").update({collection: null}).eq("user_id", this.userId).eq("url", url).then(({error}) => {
 
-            if(!error){
-
-                // update bookmark from the list
-                bookmark.collection = null
-            }
+            if(!error) bookmark.collection = null
+            
+            return { error }
         })
     }
 
 }
+
+
 
 export { lib }
 

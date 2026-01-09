@@ -18,14 +18,9 @@
 
         const password = formData.get("password")
 
-        try{
+        const {error} = await lib.signin( email, password)
 
-            await lib.signin( email, password)
-        }
-        catch(error){
-
-            errorMessage.value = error.message
-        }
+        if(error) errorMessage.value = error.message
     }
 
 </script>
