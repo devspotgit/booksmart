@@ -1,11 +1,11 @@
 
 import { createApp } from "vue"
 
-import Home from "./home/Home.vue"
+import Home from "./components/Home.vue"
 
-import Signin from "./signin/Signin.vue"
+import Signin from "./components/Signin.vue"
 
-import Signup from "./signup/signup.vue"
+import Signup from "./components/signup.vue"
 
 const router = {
 
