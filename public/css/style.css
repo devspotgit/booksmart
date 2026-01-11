@@ -45,6 +45,11 @@ body, html{
 
 /* ---------------------------- sign form --------------------------- */
 
+.sign-form-wrapper{
+
+
+}
+
 .sign-form{
     display:flex;
     flex-direction:column;
@@ -139,7 +144,7 @@ body, html{
 .side-header > button{
     align-self: start;
     color:var(--grey-lighter-plus);
-    background-color:rgb(209, 147, 147);
+    background-color:rgb(194, 102, 102);
     padding:10px;
     border:1px solid var(--grey-lighter-plus);
 }
@@ -167,6 +172,7 @@ body, html{
     flex-direction:column;
     gap:30px;
     padding-inline:20px;
+    padding-bottom:20px;
 }
 
 .side-body > button{
@@ -243,8 +249,6 @@ body, html{
 }
 
 
-
-
 /* ---------------------------- main --------------------------- */
 
 .main{
@@ -262,6 +266,7 @@ body, html{
     width:100%;
     height:100%;
     background-color:rgba(255, 255, 255, 0.7);
+    z-index:2;
 }
 
 
@@ -278,6 +283,7 @@ body, html{
     position:sticky;
     background-color:var(--grey);
     top:0;
+    z-index:1;
 }
 
 
@@ -319,6 +325,200 @@ body, html{
 .search > span{
     color:var(--grey-lighter-plus);
 }
+
+
+/* ---------------------------- main body --------------------------- */
+
+.main-body{
+    padding:20px;
+    display:flex;
+    gap:30px;
+    flex-direction:column;
+}
+
+.main-body > span{
+    text-transform: capitalize;
+    font-size:1.3rem;
+    color:var(--white);
+}
+
+.bookmark-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(250px, 1fr));
+    grid-auto-rows:250px;
+    gap:20px;
+}
+
+
+/* ---------------------------- bookmark item --------------------------- */
+
+.bookmark-item{
+    padding:20px;
+    display:grid;
+    grid-template-rows:max-content auto;
+    gap:20px;
+    background-color:var(--grey-light);
+    border-radius:10px;
+    box-shadow:2px 2px 10px;
+    border:1px solid var(--grey-lighter);
+}
+
+.bookmark-item-menu{
+    position:relative;
+    display:flex;
+    justify-content: space-between;
+    align-items:center;
+}
+
+.bookmark-item-menu > button{
+    color:var(--white);
+}
+
+.bookmark-item-settings{
+    display:none;
+    flex-direction:column;
+    gap:10px;
+    padding:15px;
+    top:100%;
+    position:absolute;
+    right:0;
+    background-color:var(--grey);
+    border:1px solid var(--grey-lighter);
+    border-radius:5px;
+    box-shadow: 2px 2px 10px;
+}
+
+.menu-open{
+    display:flex;
+}
+
+.bookmark-item-settings > *{
+    color:var(--grey-lighter-plus);
+    background-color:var(--grey-light);
+    padding:5px;
+    font-size:0.9rem;
+}
+
+.bookmark-item-image{
+    position:relative;
+    height:50px;
+    width:50px;
+    border-radius:100%;
+    overflow:hidden;
+}
+
+.bookmark-item-image > img{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+}
+
+.bookmark-item-info{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    align-self:end;
+}
+
+.bookmark-item-info > span{
+    line-height:1.6;
+}
+
+.bookmark-item-info > span:last-of-type{
+    color:var(--grey-lighter-plus)
+}
+
+.bookmark-item-info > span:first-of-type{
+    font-size:1.1rem;
+    color:var(--white);
+}
+
+.bookmark-item-info > a{
+    text-decoration:none;
+    color:rgb(115, 115, 209);
+}
+
+
+
+/* ---------------------------- user form --------------------------- */
+
+.user-form-wrapper{
+    position:fixed;
+    height:100vh;
+    width:100%;
+    background-color:rgba(255, 255, 255, 0.7);
+    top:0;
+    left:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:3;
+}
+
+.user-form{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    padding:20px;
+    background-color:var(--grey-light);
+    border-radius:10px;
+    border:1px solid var(--grey-lighter);
+    box-shadow:2px 2px 10px;
+}
+
+.user-form > button{
+    align-self:end;
+    font-size:0.8rem;
+    color:var(--white);
+}
+
+.user-form > span{
+    color:rgb(194, 102, 102);
+    font-size:0.rem;
+    text-align:center;
+    line-height:1.6;
+}
+
+.user-form-detail{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+}
+
+.user-form-detail > span{
+    text-align:center;
+    font-size:1.3rem;
+    color:var(--grey);    
+}
+
+.user-form-detail > input{
+    padding:10px;
+    color:var(--grey);
+    border-radius:5px;
+}
+
+.user-form-detail > input::placeholder{
+    color:var(--grey);
+}
+
+.user-form-detail > button{
+    padding:10px;
+    background-color:var(--grey);
+    color:var(--white);
+    border:1px solid var(--grey-lighter);
+    border-radius:5px;
+}
+
+
+
+
+
+
+
+
+
 
 
 @media(max-width:800px){
