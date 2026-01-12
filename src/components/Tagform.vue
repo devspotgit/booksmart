@@ -9,6 +9,8 @@
 
     const errorMes = ref("")
 
+    const isLoading = ref(false)
+
     
     const emit = defineEmits([ "tagAdded", "closeTagForm" ])
 
@@ -39,7 +41,11 @@
 
             try{
 
+                isLoading.value = true
+
                 const { error } = await lib.addTag(tagname) 
+
+                isLoading.value = false
 
                 if(error){
 
@@ -70,7 +76,7 @@
             <div class="user-form-detail">
                 <span>Add a new tag</span>
                 <input type="text" placeholder="Tag name" name="name">
-                <button>Add Tag</button>
+                <button :disabled="isLoading" :class="{'disabled': isLoading}">Add Tag</button>
             </div>
         </form>
     </div>

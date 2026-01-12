@@ -9,6 +9,8 @@
     
     const errorMes = ref("")
 
+    const isLoading = ref(false)
+
     const emit = defineEmits([ "collectionAdded", "closeCollectionForm" ])
 
     
@@ -38,7 +40,11 @@
 
             try{
 
-                const { error } = await lib.addCollection(colname) 
+                isLoading.value = true
+
+                const { error } = await lib.addCollection(colname)
+                
+                isLoading.value = false
 
                 if(error){
 
@@ -70,7 +76,7 @@
             <div class="user-form-detail">
                 <span>Add a new collection</span>
                 <input type="text" placeholder="Collection name" name="name">
-                <button>Add Collection</button>
+                <button :disabled="isLoading" :class="{'disabled': isLoading}">Add Collection</button>
             </div>
         </form>
     </div>

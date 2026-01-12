@@ -112,6 +112,7 @@ body, html{
     background-color:var(--grey);
     left:0;
     transition:left 0.5s;
+    min-width:300px;
 }
 
 
@@ -599,9 +600,10 @@ body, html{
     border-radius:5px;
 }
 
-.disabled{
-
-    background-color:var(--grey-light);    
+.user-form-detail .disabled{
+    background-color:var(--grey-light);  
+    cursor:initial;
+    color:var(--grey-lighter);  
 }
 
 

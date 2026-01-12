@@ -63,11 +63,11 @@
         }
     }
 
-    async function removeCollection(collection){
+    async function removeCollection(){
 
         try{
 
-            const { error } = await lib.removeBookmarkFromCollection(collection, props.bookmark.url)
+            const { error } = await lib.removeBookmarkFromCollection(props.bookmark.url)
 
             if(error){
 
@@ -108,7 +108,7 @@
             <div class="manage-body">
                 <div v-for="collection in searchResult" class="manage-item">
                     <span>{{collection}}</span>
-                    <button v-if="bookmarkCollection == collection" @click="removeCollection(collection)">-</button>
+                    <button v-if="bookmarkCollection == collection" @click="removeCollection()">-</button>
                     <button v-else @click="addCollection(collection)">+</button>
                 </div>
             </div>

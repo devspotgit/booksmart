@@ -129,7 +129,7 @@
         }
         else if(currentSelection.value.type == "collection"){
 
-            currentBookmarkList.value = lib.getBookmarksFromCollection(item).data
+            currentBookmarkList.value = lib.getBookmarksFromCollection(currentSelection.value.item).data
             
             const key = searchKey.value.trim()
             
@@ -139,7 +139,7 @@
         }
         else if(currentSelection.value.type == "tag"){
 
-            currentBookmarkList.value = lib.getBookmarksFromTag(item).data
+            currentBookmarkList.value = lib.getBookmarksFromTag(currentSelection.value.item).data
 
             const key = searchKey.value.trim()
             
