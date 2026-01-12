@@ -2,7 +2,7 @@
 
 <script setup>
 
-    import { ref, defineEmits, onMounted } from "vue"
+    import { ref, defineEmits } from "vue"
 
     import { lib } from "../lib.js"
 
@@ -17,10 +17,14 @@
 
     function manageCollection(){
 
+        isMenuOpen.value = false
+
         emit("manageCollection", props.bookmark)
     }
 
     function manageTag(){
+
+        isMenuOpen.value = false
 
         emit("manageTag", props.bookmark)
     }

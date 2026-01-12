@@ -15,6 +15,10 @@
 
     import Bookmarkform from "./Bookmarkform.vue"
 
+    import Managecollection from "./Managecollection.vue"
+
+    import Managetag from "./Managetag.vue"
+
     
     const props = defineProps({
 
@@ -30,9 +34,14 @@
     
     const isBookmarkFormOpen = ref(false)
 
-    const searchPlaceholder = ref("")
+    const isManageCollectionOpen = ref(false)
+
+    const isManageTagOpen = ref(false)
 
     const isSideOpen = ref(false)
+
+
+    const searchPlaceholder = ref("")
 
     const allBookmarks = ref([])
 
@@ -49,6 +58,10 @@
     const currentBookmarkList = ref([])
 
     const currentBookmarkListTitle = ref("")
+
+    const manageTagBookmark = ref({})
+
+    const manageCollectionBookmark = ref({})
 
 
     function capitalize(name){
@@ -68,11 +81,31 @@
         }
     }
 
-    function updatedBookmark(){
+    function manageCollection(bookmark){
+
+        isManageCollectionOpen.value = true
+
+        manageCollectionBookmark.value = bookmark
+    }
+
+    function manageTag(bookmark){
+
+        isManageTagOpen.value = true
+
+        manageTagBookmark.value = bookmark
+    }
+
+
+    function updatedBookmark( ){
 
         favoriteBookmarks.value = lib.getFavoriteBookmarks().data
 
         allBookmarks.value = lib.getAllBookmarks().data
+
+        allCollections.value = lib.getAllCollections().data
+
+        allTags.value = lib.getAllTags().data
+
 
         if(currentSelection.value.type == "bookmarks"){
 
@@ -145,6 +178,21 @@
             if(!key) searchResult.value = currentBookmarkList.value
 
             else searchResult.value = currentBookmarkList.value.filter(item => item.title.includes(key) || item.domain.includes(key) || item.url.includes(key))
+        }
+    }
+
+    async function logout(){
+
+        try{
+
+            const {error} = await lib.signout()
+
+            if(error) throw new Error(error.message)
+        }
+
+        catch(error){
+
+            console.log(error)
         }
     }
 
@@ -331,6 +379,11 @@
 
     <Bookmarkform  v-if="isBookmarkFormOpen"  @bookmark-added="bookmarkAdded" @close-bookmark-form="() => isBookmarkFormOpen = false" />
 
+    <Managecollection   :collections="allCollections"  :bookmark="manageCollectionBookmark"    v-if="isManageCollectionOpen" @updated-bookmark="updatedBookmark" @close-manage-collection="() => isManageCollectionOpen = false"/>
+
+    <Managetag   :tags="allTags" :bookmark="manageTagBookmark" v-if="isManageTagOpen" @updated-bookmark="updatedBookmark" @close-manage-tag="() => isManageTagOpen = false"/>
+
+
 
     <div class="home" :class="{ 'side-open': isSideOpen }">
 
@@ -342,7 +395,7 @@
                     <span>{{ capitalize(user.email.split("@")[0]) }}</span>
                     <button @click="isSideOpen = false"><i class="fa-solid fa-x"></i></button>
                 </div>
-                <button>Logout</button>
+                <button @click="logout">Logout</button>
             </div>
             <div class="side-body">
                 <button @click="isBookmarkFormOpen = true">Add Bookmark</button>
@@ -402,7 +455,7 @@
             <div class="main-body">
                 <span>{{ currentBookmarkListTitle }}</span>
                 <div class="bookmark-list">
-                    <Bookmark  v-for="item in searchResult" :bookmark="item"  @updated-bookmark="updatedBookmark" />
+                    <Bookmark  v-for="item in searchResult" :bookmark="item"  @updated-bookmark="updatedBookmark" @manage-collection="manageCollection" @manage-tag="manageTag"/>
                 </div>
             </div>
             <div class="main-overlay" :class="{ 'main-overlay-show': isSideOpen }" @click="isSideOpen = false"></div>

@@ -43,7 +43,7 @@
 
                 if(error){
 
-                    if(error.reason) errorMes.value = error.message
+                    if(error?.reason) errorMes.value = error.message
 
                     else throw new Error(error.message)
                 }

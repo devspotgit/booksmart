@@ -10,6 +10,8 @@
 
     const errorMes = ref("")
 
+    const isLoading = ref(false)
+
     const emit = defineEmits([ "bookmarkAdded", "closeBookmarkForm" ])
 
     
@@ -37,11 +39,15 @@
 
             try{
 
+                isLoading.value = true
+
                 const { error } = await lib.addBookmark(url) 
+
+                isLoading.value = false
 
                 if(error){
 
-                    if(error.reason) errorMes.value = error.message
+                    if(error?.reason) errorMes.value = error.message
 
                     else throw new Error(error.message)
                 }
@@ -69,7 +75,7 @@
             <div class="user-form-detail">
                 <span>Add a new bookmark</span>
                 <input type="text" placeholder="Bookmark url" name="url">
-                <button>Add Bookmark</button>
+                <button :disabled="isLoading" :class="{'disabled': isLoading}">Add Bookmark</button>
             </div>
         </form>
     </div>
